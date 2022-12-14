@@ -30,16 +30,16 @@
          const password = user.password;
          const existingUser = await userDao
              .findUserByUsername(username);
-        // const match = await bcrypt.compare(password, existingUser.password);
+         const match = await bcrypt.compare(password, existingUser.password);
  
-       //  if (match) {
+         if (match) {
              existingUser.password = '*****';
              // @ts-ignore
              req.session['profile'] = existingUser;
              res.json(existingUser);
-         //} else {
-           //  res.sendStatus(403);
-         //}
+         } else {
+             res.sendStatus(403);
+         }
      }
  
      /**
