@@ -30,15 +30,15 @@
          const password = user.password;
          const existingUser = await userDao
              .findUserByUsername(username);
-         const match = await bcrypt.compare(password, existingUser.password);
+        const match = await bcrypt.compare(password, existingUser.password);
  
-         if (match) {
+        if (match) {
              existingUser.password = '*****';
              // @ts-ignore
              req.session['profile'] = existingUser;
              res.json(existingUser);
          } else {
-             res.sendStatus(403);
+            res.sendStatus(403);
          }
      }
  
@@ -50,24 +50,31 @@
       * body formatted as JSON object containing the user object
       */
      const signup = async (req: Request, res: Response) => {
+         console.log("SIGN UP CALLED");
          const newUser = req.body;
          const password = newUser.password;
-         const hash = await bcrypt.hash(password, saltRounds);
-         newUser.password = hash;
- 
-         const existingUser = await userDao
-             .findUserByUsername(req.body.username);
-         if (existingUser) {
-             res.sendStatus(403);
-             return;
-         } else {
-             const insertedUser = await userDao
-                 .createUser(newUser);
-             insertedUser.password = '';
-             // @ts-ignore
-             req.session['profile'] = insertedUser;
-             res.json(insertedUser);
+         try {
+             const hash = await bcrypt.hash(password, saltRounds);
+             newUser.password = hash;
+            console.log("SIGN UP CONTROLLER : ", newUser.username, newUser.password, newUser.email);
+             const existingUser = await userDao
+                 .findUserByUsername(req.body.username);
+             if (existingUser) {
+                 res.sendStatus(403);
+                 return;
+             } else {
+                 const insertedUser = await userDao
+                     .createUser(newUser);
+                 insertedUser.password = '';
+                 // @ts-ignore
+                 req.session['profile'] = insertedUser;
+                 res.json(insertedUser);
+             }
+         } catch(e) {
+             console.log("ERROR IN SIGN UP: ", e);
+             res.status(500).json({error: true});
          }
+
      }
  
      /**
