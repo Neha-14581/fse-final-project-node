@@ -30,3 +30,5 @@ import Tuit from "../models/Tuit";
     }
 }, {collection: "tuits"});
 export default TuitSchema;
+
+//tuit schema
